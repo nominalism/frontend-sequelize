@@ -1,0 +1,156 @@
+{
+	"info": {
+		"_postman_id": "e8d23f3c-5c32-46f4-ae73-e09459fbc7f6",
+		"name": "Relatorios SCV - Yuri, Leonardo e Rosaes",
+		"description": "Coleção para testar os relatórios do Sistema de Candidatura a Vagas\n\nAutores: Yuri (Relatórios 1-2), Leonardo (Relatórios 3-4), Rosaes (Relatórios 5-6)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Relatório de Contratados",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3333/candidaturas/findBySelecionado/true",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"candidaturas",
+						"findBySelecionado",
+						"true"
+					]
+				},
+				"description": "Relatório de candidatos contratados (selecionados = true)\n\n**Autor**: Yuri"
+			},
+			"response": []
+		},
+		{
+			"name": "2. Relatório de Etapas por Processo Seletivo",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3333/etapas/findByProcessoSeletivo/1/etapa/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"etapas",
+						"findByProcessoSeletivo",
+						"1",
+						"etapa",
+						"1"
+					],
+					"variable": [
+						{
+							"key": "processoSeletivoId",
+							"value": "1",
+							"description": "ID do processo seletivo"
+						},
+						{
+							"key": "etapaId",
+							"value": "1",
+							"description": "ID da etapa (opcional)"
+						}
+					]
+				},
+				"description": "Relatório de etapas por processo seletivo. É possível filtrar por uma etapa específica.\n\n**Autor**: Yuri"
+			},
+			"response": []
+		},
+		{
+			"name": "3. Relatório de Candidaturas por Vaga",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3333/candidaturas/relatorios/candidaturasPorVaga",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"candidaturas",
+						"relatorios",
+						"candidaturasPorVaga"
+					]
+				},
+				"description": "Relatório que mostra o número de candidaturas para cada vaga.\n\n**Autor**: Leonardo"
+			},
+			"response": []
+		},
+		{
+			"name": "4. Relatório de Contratações por Empresa",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3333/candidaturas/relatorios/contratacoesPorEmpresa",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"candidaturas",
+						"relatorios",
+						"contratacoesPorEmpresa"
+					]
+				},
+				"description": "Relatório que mostra o número de contratações realizadas por cada empresa.\n\n**Autor**: Leonardo"
+			},
+			"response": []
+		},
+		{
+			"name": "5. Relatório de Processos Seletivos por Empresa",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3333/processos/relatorios/processosPorEmpresa",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"processos",
+						"relatorios",
+						"processosPorEmpresa"
+					]
+				},
+				"description": "Relatório que mostra os processos seletivos por empresa, incluindo informações sobre status dos processos.\n\n**Autor**: Rosaes"
+			},
+			"response": []
+		},
+		{
+			"name": "6. Relatório de Contratações por Área",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3333/areas/relatorios/contratacoesPorArea",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"areas",
+						"relatorios",
+						"contratacoesPorArea"
+					]
+				},
+				"description": "Relatório que mostra o número de contratações por área de atuação.\n\n**Autor**: Rosaes"
+			},
+			"response": []
+		}
+	]
+}

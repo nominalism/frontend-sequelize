@@ -1,0 +1,703 @@
+{
+  "info": {
+    "name": "Sistema RH - Regras de Negócio",
+    "_postman_id": "12345678-1234-1234-1234-123456789012",
+    "description": "Testes para as regras de negócio implementadas por cada integrante do grupo",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "YURI - Candidatura",
+      "description": "Processo de negócio: Candidatura\nRegra 1.1: Para candidatar-se o candidato precisa estar de acordo com os requisitos da vaga\nRegra 1.2: O candidato não pode se candidatar em duas vagas no mesmo processo seletivo",
+      "item": [
+        {
+          "name": "GET ALL Candidaturas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/candidaturas",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidaturas"]
+            }
+          }
+        },
+        {
+          "name": "GET ONE Candidatura",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/candidaturas/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidaturas", "1"]
+            }
+          }
+        },
+        {
+          "name": "POST Candidatura - Sucesso",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": \"2024-06-04T10:00:00.000Z\",\n  \"dados_atualizados\": false,\n  \"selecionado\": false,\n  \"candidatoId\": 1,\n  \"vagaId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/candidaturas",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidaturas"]
+            }
+          }
+        },
+        {
+          "name": "POST Candidatura - Erro Campos Básicos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": \"invalid-date\",\n  \"candidatoId\": 999,\n  \"vagaId\": 999\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/candidaturas",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidaturas"]
+            }
+          }
+        },
+        {
+          "name": "POST Candidatura - Regra 1.1 (Curso Incompatível)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": \"2024-06-04T10:00:00.000Z\",\n  \"dados_atualizados\": false,\n  \"selecionado\": false,\n  \"candidatoId\": 2,\n  \"vagaId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/candidaturas",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidaturas"]
+            },
+            "description": "Candidato 2 (ENFERMAGEM/NOTURNO) tentando se candidatar a vaga 1 (Desenvolvedor Full Stack - SIS_INFORMACAO/MATUTINO - curso E turno incompatíveis)"
+          }
+        },
+        {
+          "name": "POST Candidatura - Regra 1.2 (Mesmo Processo Seletivo)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": \"2024-06-04T10:00:00.000Z\",\n  \"dados_atualizados\": false,\n  \"selecionado\": false,\n  \"candidatoId\": 1,\n  \"vagaId\": 8\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/candidaturas",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidaturas"]
+            },
+            "description": "Candidato 1 (João da Silva) tentando se candidatar a vaga 8 no mesmo processo seletivo 1 (já tem candidatura nas vagas 1 e 6)"
+          }
+        },
+        {
+          "name": "PUT Candidatura",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dados_atualizados\": true,\n  \"selecionado\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/candidaturas/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidaturas", "1"]
+            }
+          }
+        },
+        {
+          "name": "DELETE Candidatura",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/candidaturas/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidaturas", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "LEONARDO - Interesse (Alertas)",
+      "description": "Processo de negócio: Interesse/Alertas\nRegra 2.1: O candidato deve estar cursando um curso correspondente a algum listado dentro da área\nRegra 2.2: O candidato pode manter até dois alertas simultaneamente ativos",
+      "item": [
+        {
+          "name": "GET ALL Interesses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/interesses",
+              "host": ["{{baseUrl}}"],
+              "path": ["interesses"]
+            }
+          }
+        },
+        {
+          "name": "GET ONE Interesse",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/interesses/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["interesses", "1"]
+            }
+          }
+        },
+        {
+          "name": "POST Interesse - Sucesso",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data_Inicio\": \"2024-06-04T10:00:00.000Z\",\n  \"data_Final\": \"2024-12-31T23:59:59.000Z\",\n  \"candidatoId\": 1,\n  \"areaId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/interesses",
+              "host": ["{{baseUrl}}"],
+              "path": ["interesses"]
+            }
+          }
+        },
+        {
+          "name": "POST Interesse - Erro Campos Básicos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data_Inicio\": \"invalid-date\",\n  \"candidatoId\": 999,\n  \"areaId\": 999\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/interesses",
+              "host": ["{{baseUrl}}"],
+              "path": ["interesses"]
+            }
+          }
+        },
+        {
+          "name": "POST Interesse - Regra 2.1 (Curso Incompatível)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data_Inicio\": \"2024-06-04T10:00:00.000Z\",\n  \"data_Final\": \"2024-12-31T23:59:59.000Z\",\n  \"candidatoId\": 2,\n  \"areaId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/interesses",
+              "host": ["{{baseUrl}}"],
+              "path": ["interesses"]
+            },
+            "description": "Candidato 2 (Maria Oliveira - ENFERMAGEM) tentando criar interesse em área 1 (Desenvolvimento - SIS_INFORMACAO) - cursos incompatíveis"
+          }
+        },
+        {
+          "name": "POST Interesse - Regra 2.2 (Máximo 2 Alertas)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data_Inicio\": \"2024-06-04T10:00:00.000Z\",\n  \"data_Final\": \"2024-12-31T23:59:59.000Z\",\n  \"candidatoId\": 7,\n  \"areaId\": 3\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/interesses",
+              "host": ["{{baseUrl}}"],
+              "path": ["interesses"]
+            },
+            "description": "Candidato 7 (Lucas Mendes) tentando criar terceiro interesse (já possui 2 ativos nas áreas 3 e 4)"
+          }
+        },
+        {
+          "name": "PUT Interesse",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data_Final\": \"2025-06-30T23:59:59.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/interesses/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["interesses", "1"]
+            }
+          }
+        },
+        {
+          "name": "DELETE Interesse",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/interesses/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["interesses", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ROSAES - Processo Seletivo",
+      "description": "Processo de negócio: Processo Seletivo\nRegra 3.1: A empresa só pode cadastrar a seleção final se todas as etapas dentro de um processo seletivo já estiverem finalizadas\nRegra 3.2: Todas as vagas pertencentes ao processo seletivo devem estar preenchidas para que a seleção seja registrada",
+      "item": [
+        {
+          "name": "GET ALL Processos Seletivos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/processos",
+              "host": ["{{baseUrl}}"],
+              "path": ["processos"]
+            }
+          }
+        },
+        {
+          "name": "GET ONE Processo Seletivo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/processos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["processos", "1"]
+            }
+          }
+        },
+        {
+          "name": "POST Processo Seletivo - Sucesso",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": 2024,\n  \"data_inicio\": \"2024-06-01T00:00:00.000Z\",\n  \"data_final\": \"2024-08-31T23:59:59.000Z\",\n  \"descricao\": \"Processo seletivo para vagas de estágio\",\n  \"empresaId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/processos",
+              "host": ["{{baseUrl}}"],
+              "path": ["processos"]
+            }
+          }
+        },
+        {
+          "name": "POST Processo Seletivo - Erro Campos Básicos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"invalid-number\",\n  \"data_inicio\": \"invalid-date\",\n  \"empresaId\": 999\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/processos",
+              "host": ["{{baseUrl}}"],
+              "path": ["processos"]
+            }
+          }
+        },
+        {
+          "name": "PUT Processo Seletivo - Regra 3.1 (Etapas Não Concluídas)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"CONCLUIDO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/processos/4",
+              "host": ["{{baseUrl}}"],
+              "path": ["processos", "4"]
+            },
+            "description": "Tentativa de concluir processo 4 (99998) com etapas ainda pendentes mas vagas preenchidas"
+          }
+        },
+        {
+          "name": "PUT Processo Seletivo - Regra 3.2 (Vagas Não Preenchidas)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"CONCLUIDO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/processos/5",
+              "host": ["{{baseUrl}}"],
+              "path": ["processos", "5"]
+            },
+            "description": "Tentativa de concluir processo 5 (99997) com etapas concluídas mas vagas não totalmente preenchidas"
+          }
+        },
+        {
+          "name": "PUT Processo Seletivo - Regras 3.1 + 3.2 (Múltiplos Erros)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"CONCLUIDO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/processos/3",
+              "host": ["{{baseUrl}}"],
+              "path": ["processos", "3"]
+            },
+            "description": "Tentativa de concluir processo 3 (99999) que falha em ambas as regras: etapas pendentes E vagas não preenchidas"
+          }
+        },
+        {
+          "name": "PUT Processo Seletivo - Sucesso",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"CONCLUIDO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/processos/6",
+              "host": ["{{baseUrl}}"],
+              "path": ["processos", "6"]
+            },
+            "description": "Sucesso: concluir processo 6 (99996) com etapas concluídas E vagas totalmente preenchidas"
+          }
+        },
+        {
+          "name": "DELETE Processo Seletivo",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/processos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["processos", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dados de Apoio",
+      "description": "Endpoints auxiliares para criar dados necessários aos testes",
+      "item": [
+        {
+          "name": "Criar UF",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"São Paulo\",\n  \"sigla\": \"SP\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ufs",
+              "host": ["{{baseUrl}}"],
+              "path": ["ufs"]
+            }
+          }
+        },
+        {
+          "name": "Criar Cidade",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"São Paulo\",\n  \"ufId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cidades",
+              "host": ["{{baseUrl}}"],
+              "path": ["cidades"]
+            }
+          }
+        },
+        {
+          "name": "Criar Bairro",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Centro\",\n  \"cidadeId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bairros",
+              "host": ["{{baseUrl}}"],
+              "path": ["bairros"]
+            }
+          }
+        },
+        {
+          "name": "Criar Empresa",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"razaoSocial\": \"Tech Solutions LTDA\",\n  \"nomeFantasia\": \"TechSol\",\n  \"cnpj\": \"12345678000199\",\n  \"telefone\": 1199887766,\n  \"email\": \"contato@techsol.com\",\n  \"numCasa\": 123,\n  \"complemento\": \"Sala 10\",\n  \"bairroId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/empresas",
+              "host": ["{{baseUrl}}"],
+              "path": ["empresas"]
+            }
+          }
+        },
+        {
+          "name": "Criar Candidato SIS_INFORMACAO",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"João Silva\",\n  \"cpf\": \"12345678901\",\n  \"email\": \"joao@email.com\",\n  \"telefone\": 1199887766,\n  \"data_nascimento\": \"1995-05-15T00:00:00.000Z\",\n  \"curso\": \"SIS_INFORMACAO\",\n  \"turno\": \"NOTURNO\",\n  \"numCasa\": 456,\n  \"complemento\": \"Apt 2\",\n  \"bairroId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/candidatos",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidatos"]
+            }
+          }
+        },
+        {
+          "name": "Criar Candidato ADM",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Maria Santos\",\n  \"cpf\": \"98765432101\",\n  \"email\": \"maria@email.com\",\n  \"telefone\": 1188776655,\n  \"data_nascimento\": \"1996-08-20T00:00:00.000Z\",\n  \"curso\": \"ADM\",\n  \"turno\": \"MATUTINO\",\n  \"numCasa\": 789,\n  \"complemento\": \"Casa\",\n  \"bairroId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/candidatos",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidatos"]
+            }
+          }
+        },
+        {
+          "name": "Criar Área SIS_INFORMACAO",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Tecnologia da Informação\",\n  \"descricao\": \"Área de desenvolvimento e suporte em TI\",\n  \"curso\": \"SIS_INFORMACAO\",\n  \"candidatos_vaga\": 5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/areas",
+              "host": ["{{baseUrl}}"],
+              "path": ["areas"]
+            }
+          }
+        },
+        {
+          "name": "Criar Área ADM",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Administração\",\n  \"descricao\": \"Área administrativa e gestão\",\n  \"curso\": \"ADM\",\n  \"candidatos_vaga\": 3\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/areas",
+              "host": ["{{baseUrl}}"],
+              "path": ["areas"]
+            }
+          }
+        },
+        {
+          "name": "Criar Vaga",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cargo\": \"Desenvolvedor Junior\",\n  \"carga_horaria\": 40,\n  \"remuneracao\": 3000.00,\n  \"turno\": \"NOTURNO\",\n  \"nivel_escolaridade\": \"GRADUACAO_INC\",\n  \"quantidade\": 2,\n  \"modalidade\": \"presencial\",\n  \"processoSeletivoId\": 1,\n  \"areaId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vagas",
+              "host": ["{{baseUrl}}"],
+              "path": ["vagas"]
+            }
+          }
+        },
+        {
+          "name": "Criar Etapa",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Entrevista Técnica\",\n  \"descricao\": \"Avaliação técnica do candidato\",\n  \"tipo\": \"ENTREVISTA\",\n  \"status_Etapa\": \"PENDENTE\",\n  \"max_candidatos\": 10,\n  \"processoSeletivoId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/etapas",
+              "host": ["{{baseUrl}}"],
+              "path": ["etapas"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3333",
+      "type": "string"
+    }
+  ]
+}
