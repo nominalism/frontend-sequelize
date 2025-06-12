@@ -40,10 +40,12 @@ const DEFAULT_AREA_INCLUDES = [
         include: [
           {
             association: 'bairro',
+            as: 'candidatoBairro', // Alias for Bairro under Candidato
             include: [
               {
                 association: 'cidade',
-                include: [{ association: 'uf' }]
+                as: 'candidatoCidade', // Alias for Cidade under CandidatoBairro
+                include: [{ association: 'uf', as: 'candidatoUf' }] // Alias for UF under CandidatoCidade
               }
             ]
           }
