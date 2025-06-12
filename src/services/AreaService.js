@@ -10,19 +10,24 @@ const sequelize = new Sequelize(databaseConfig);
 const DEFAULT_AREA_INCLUDES = [
   {
     association: 'vagas',
+    as: 'areaVagas', // Alias for Area's own Vagas
     include: [
       {
         association: 'processoSeletivo',
+        as: 'vagaProcessoSeletivo', // Alias
         include: [
           {
             association: 'empresa',
+            as: 'processoEmpresa', // Alias
             include: [
               {
                 association: 'bairro',
+                as: 'empresaBairroViaAreaVaga', // Specific alias
                 include: [
                   {
                     association: 'cidade',
-                    include: [{ association: 'uf' }]
+                    as: 'empresaCidadeViaAreaVaga', // Specific alias
+                    include: [{ association: 'uf', as: 'empresaUfViaAreaVaga' }] // Specific alias
                   }
                 ]
               }
@@ -34,18 +39,20 @@ const DEFAULT_AREA_INCLUDES = [
   },
   {
     association: 'interesses',
+    as: 'areaInteresses', // Alias for Area's own Interesses
     include: [
       {
         association: 'candidato',
+        as: 'interesseCandidato', // Alias
         include: [
           {
             association: 'bairro',
-            as: 'candidatoBairro', // Alias for Bairro under Candidato
+            as: 'candidatoBairroViaAreaInteresse', // Specific alias (was candidatoBairro)
             include: [
               {
                 association: 'cidade',
-                as: 'candidatoCidade', // Alias for Cidade under CandidatoBairro
-                include: [{ association: 'uf', as: 'candidatoUf' }] // Alias for UF under CandidatoCidade
+                as: 'candidatoCidadeViaAreaInteresse', // Specific alias (was candidatoCidade)
+                include: [{ association: 'uf', as: 'candidatoUfViaAreaInteresse' }] // Specific alias (was candidatoUf)
               }
             ]
           }
