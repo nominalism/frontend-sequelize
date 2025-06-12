@@ -7,16 +7,61 @@ import { Sequelize, QueryTypes } from "sequelize";
 import { databaseConfig } from "../config/database-config.js";
 const sequelize = new Sequelize(databaseConfig);
 
-class AreaService {
+const DEFAULT_AREA_INCLUDES = [
+  {
+    association: 'vagas',
+    include: [
+      {
+        association: 'processoSeletivo',
+        include: [
+          {
+            association: 'empresa',
+            include: [
+              {
+                association: 'bairro',
+                include: [
+                  {
+                    association: 'cidade',
+                    include: [{ association: 'uf' }]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    association: 'interesses',
+    include: [
+      {
+        association: 'candidato',
+        include: [
+          {
+            association: 'bairro',
+            include: [
+              {
+                association: 'cidade',
+                include: [{ association: 'uf' }]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+];
 
+class AreaService {
   static async findAll() {
-    const objs = await Area.findAll({ include: { all: true, nested: true } });
+    const objs = await Area.findAll({ include: DEFAULT_AREA_INCLUDES });
     return objs;
   }
 
   static async findByPk(req) {
     const { id } = req.params;
-    const obj = await Area.findByPk(id, { include: { all: true, nested: true } });
+    const obj = await Area.findByPk(id, { include: DEFAULT_AREA_INCLUDES });
     return obj;
   }
 
@@ -24,7 +69,7 @@ class AreaService {
     const { nome, descricao, curso, candidatos_vaga } = req.body;
     try {
       const obj = await Area.create({ nome, descricao, curso, candidatos_vaga });
-      return await Area.findByPk(obj.id, { include: { all: true, nested: true } });
+      return await Area.findByPk(obj.id, { include: DEFAULT_AREA_INCLUDES });
     } catch (error) {
       if (error instanceof SequelizeValidationError) {
         const messages = error.errors.map(e => e.message);
@@ -38,7 +83,7 @@ class AreaService {
     const { id } = req.params;
     const { nome, descricao, curso, candidatos_vaga } = req.body;
     
-    const obj = await Area.findByPk(id, { include: { all: true, nested: true } });
+    const obj = await Area.findByPk(id, { include: DEFAULT_AREA_INCLUDES });
     if (obj == null) throw 'Área não encontrada!';
     
     // Ensure only fields present in the body are assigned
@@ -52,7 +97,7 @@ class AreaService {
     
     try {
       await obj.save();
-      return await Area.findByPk(obj.id, { include: { all: true, nested: true } });
+      return await Area.findByPk(obj.id, { include: DEFAULT_AREA_INCLUDES });
     } catch (error) {
       if (error instanceof SequelizeValidationError) {
         const messages = error.errors.map(e => e.message);

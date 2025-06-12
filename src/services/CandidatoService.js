@@ -3,15 +3,63 @@ import { Candidato } from "../models/Candidato.js";
 import { Bairro } from "../models/Bairro.js";
 
 class CandidatoService {
-
   static async findAll() {
-    const objs = await Candidato.findAll({ include: { all: true, nested: true } });
+    const objs = await Candidato.findAll({ 
+      include: [
+        {
+          association: 'bairro',
+          include: [
+            {
+              association: 'cidade',
+              include: ['uf']
+            }
+          ]
+        },
+        {
+          association: 'candidaturas',
+          include: [
+            {
+              association: 'vaga',
+              include: ['area', 'processoSeletivo']
+            }
+          ]
+        },
+        {
+          association: 'interesses',
+          include: ['area']
+        }
+      ]
+    });
     return objs;
   }
-
   static async findByPk(req) {
     const { id } = req.params;
-    const obj = await Candidato.findByPk(id, { include: { all: true, nested: true } });
+    const obj = await Candidato.findByPk(id, { 
+      include: [
+        {
+          association: 'bairro',
+          include: [
+            {
+              association: 'cidade',
+              include: ['uf']
+            }
+          ]
+        },
+        {
+          association: 'candidaturas',
+          include: [
+            {
+              association: 'vaga',
+              include: ['area', 'processoSeletivo']
+            }
+          ]
+        },
+        {
+          association: 'interesses',
+          include: ['area']
+        }
+      ]
+    });
     return obj;
   }
 
@@ -47,7 +95,32 @@ class CandidatoService {
         complemento,
         bairroId
       });
-      return await Candidato.findByPk(obj.id, { include: { all: true, nested: true } });
+      return await Candidato.findByPk(obj.id, { 
+        include: [
+          {
+            association: 'bairro',
+            include: [
+              {
+                association: 'cidade',
+                include: ['uf']
+              }
+            ]
+          },
+          {
+            association: 'candidaturas',
+            include: [
+              {
+                association: 'vaga',
+                include: ['area', 'processoSeletivo']
+              }
+            ]
+          },
+          {
+            association: 'interesses',
+            include: ['area']
+          }
+        ]
+      });
     } catch (error) {
       // Capturar erros de validação do Sequelize e retornar mensagens mais amigáveis
       if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
@@ -68,7 +141,32 @@ class CandidatoService {
       if (bairro == null) throw 'Bairro não encontrado!';
     }
     
-    const obj = await Candidato.findByPk(id, { include: { all: true, nested: true } });
+    const obj = await Candidato.findByPk(id, { 
+      include: [
+        {
+          association: 'bairro',
+          include: [
+            {
+              association: 'cidade',
+              include: ['uf']
+            }
+          ]
+        },
+        {
+          association: 'candidaturas',
+          include: [
+            {
+              association: 'vaga',
+              include: ['area', 'processoSeletivo']
+            }
+          ]
+        },
+        {
+          association: 'interesses',
+          include: ['area']
+        }
+      ]
+    });
     if (obj == null) throw 'Candidato não encontrado!';
     
     // Validar curso

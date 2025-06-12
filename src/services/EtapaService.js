@@ -5,16 +5,60 @@ import { Sequelize, QueryTypes } from "sequelize";
 import { databaseConfig } from "../config/database-config.js";
 const sequelize = new Sequelize(databaseConfig);
 
+const DEFAULT_ETAPA_INCLUDES = [
+  {
+    association: 'processoSeletivo',
+    include: [
+      {
+        association: 'empresa',
+        include: [
+          {
+            association: 'bairro',
+            include: [
+              {
+                association: 'cidade',
+                include: [{ association: 'uf' }]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        association: 'vagas',
+        include: [
+          {
+            association: 'area'
+          },
+          {
+            association: 'candidaturas',
+            include: [
+              {
+                association: 'candidato',
+                include: [
+                  {
+                    association: 'interesses',
+                    include: [{ association: 'area' }]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+];
+
 class EtapaService {
 
   static async findAll() {
-    const objs = await Etapa.findAll({ include: { all: true, nested: true } });
+    const objs = await Etapa.findAll({ include: DEFAULT_ETAPA_INCLUDES });
     return objs;
   }
 
   static async findByPk(req) {
     const { id } = req.params;
-    const obj = await Etapa.findByPk(id, { include: { all: true, nested: true } });
+    const obj = await Etapa.findByPk(id, { include: DEFAULT_ETAPA_INCLUDES });
     return obj;
   }
 
@@ -64,7 +108,7 @@ class EtapaService {
       max_candidatos, 
       processoSeletivoId 
     });
-    return await Etapa.findByPk(obj.id, { include: { all: true, nested: true } });
+    return await Etapa.findByPk(obj.id, { include: DEFAULT_ETAPA_INCLUDES });
   }
 
   static async update(req) {
@@ -77,11 +121,12 @@ class EtapaService {
       if (processoSeletivo == null) throw 'Processo Seletivo não encontrado!';
     }
     
-    const obj = await Etapa.findByPk(id, { include: { all: true, nested: true } });
+    const obj = await Etapa.findByPk(id, { include: DEFAULT_ETAPA_INCLUDES });
     if (obj == null) throw 'Etapa não encontrada!';
     
     Object.assign(obj, { nome, descricao, tipo, status_Etapa, max_candidatos, processoSeletivoId });
-    return await obj.save();
+    await obj.save(); // Ensure save is awaited
+    return await Etapa.findByPk(obj.id, { include: DEFAULT_ETAPA_INCLUDES }); // Return the updated object with includes
   }
 
   static async delete(req) {
