@@ -5,16 +5,97 @@ import { Area } from "../models/Area.js";
 import { Candidatura } from "../models/Candidatura.js";
 import { ValidationError as SequelizeValidationError } from 'sequelize';
 
+// Importações adicionais para includes detalhados
+import { Empresa } from "../models/Empresa.js";
+import { Bairro } from "../models/Bairro.js";
+import { Cidade } from "../models/Cidade.js";
+import { Uf } from "../models/Uf.js";
+import { Interesse } from "../models/Interesse.js";
+import { Candidato } from "../models/Candidato.js";
+
+const DEFAULT_VAGA_INCLUDES = [
+  {
+    association: 'processoSeletivo',
+    include: [
+      {
+        association: 'empresa',
+        include: [
+          {
+            association: 'bairro',
+            as: 'empresaBairro', // Alias para Bairro em Empresa
+            include: [
+              {
+                association: 'cidade',
+                as: 'empresaCidade', // Alias para Cidade em Bairro de Empresa
+                include: [{ association: 'uf', as: 'empresaUf' }] // Alias para UF em Cidade de Empresa
+              }
+            ]
+          }
+        ]
+      }
+      // Adicionar 'etapas' aqui se necessário e se ProcessoSeletivo tiver essa associação
+    ]
+  },
+  {
+    association: 'area',
+    include: [
+      {
+        association: 'interesses',
+        include: [
+          {
+            association: 'candidato',
+            include: [
+              {
+                association: 'bairro',
+                as: 'candidatoBairroViaArea', // Alias para Bairro em Candidato via Area/Interesse
+                include: [
+                  {
+                    association: 'cidade',
+                    as: 'candidatoCidadeViaArea',
+                    include: [{ association: 'uf', as: 'candidatoUfViaArea' }]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    association: 'candidaturas',
+    include: [
+      {
+        association: 'candidato',
+        as: 'candidatoDaCandidatura', // Alias para Candidato em Candidatura
+        include: [
+           {
+            association: 'bairro',
+            as: 'candidatoBairroViaCandidatura', // Alias para Bairro em Candidato via Candidatura
+            include: [
+              {
+                association: 'cidade',
+                as: 'candidatoCidadeViaCandidatura',
+                include: [{ association: 'uf', as: 'candidatoUfViaCandidatura' }]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+];
+
 class VagaService {
 
   static async findAll() {
-    const objs = await Vaga.findAll({ include: { all: true, nested: true } });
+    const objs = await Vaga.findAll({ include: DEFAULT_VAGA_INCLUDES });
     return objs;
   }
 
   static async findByPk(req) {
     const { id } = req.params;
-    const obj = await Vaga.findByPk(id, { include: { all: true, nested: true } });
+    const obj = await Vaga.findByPk(id, { include: DEFAULT_VAGA_INCLUDES });
     return obj;
   }
 
@@ -22,7 +103,7 @@ class VagaService {
     const { id } = req.params;
     const objs = await Vaga.findAll({
       where: { processoSeletivoId: id },
-      include: { all: true, nested: true }
+      include: DEFAULT_VAGA_INCLUDES
     });
     return objs;
   }
@@ -31,7 +112,7 @@ class VagaService {
     const { id } = req.params;
     const objs = await Vaga.findAll({
       where: { areaId: id },
-      include: { all: true, nested: true }
+      include: DEFAULT_VAGA_INCLUDES
     });
     return objs;
   }
@@ -57,7 +138,7 @@ class VagaService {
         processoSeletivoId, 
         areaId 
       });
-      return await Vaga.findByPk(obj.id, { include: { all: true, nested: true } });
+      return await Vaga.findByPk(obj.id, { include: DEFAULT_VAGA_INCLUDES });
     } catch (error) {
       if (error instanceof SequelizeValidationError) {
         const messages = error.errors.map(e => e.message);
@@ -83,7 +164,7 @@ class VagaService {
       if (area == null) throw 'Área não encontrada!';
     }
     
-    const obj = await Vaga.findByPk(id, { include: { all: true, nested: true } });
+    const obj = await Vaga.findByPk(id, { include: DEFAULT_VAGA_INCLUDES });
     if (obj == null) throw 'Vaga não encontrada!';
 
     const updateData = {};
@@ -101,7 +182,7 @@ class VagaService {
     
     try {
       await obj.save();
-      return await Vaga.findByPk(obj.id, { include: { all: true, nested: true } });
+      return await Vaga.findByPk(obj.id, { include: DEFAULT_VAGA_INCLUDES });
     } catch (error) {
       if (error instanceof SequelizeValidationError) {
         const messages = error.errors.map(e => e.message);
@@ -136,4 +217,4 @@ class VagaService {
 
 }
 
-export { VagaService }; 
+export { VagaService };
