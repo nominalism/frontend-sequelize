@@ -9,34 +9,80 @@ import { databaseConfig } from "../config/database-config.js";
 const sequelize = new Sequelize(databaseConfig);
 
 class ProcessoSeletivoService {
+  // Método helper para verificar e atualizar o status baseado na data
+  static async verificarEAtualizarStatus(processoSeletivo) {
+    const agora = new Date();
+    const dataInicio = new Date(processoSeletivo.data_inicio);
+    
+    // Se a data atual for maior que a data de início E o status ainda for 'NAO_INICIADO', muda para 'EM_ANDAMENTO'
+    if (agora > dataInicio && processoSeletivo.status === 'NAO_INICIADO') {
+      processoSeletivo.status = 'EM_ANDAMENTO';
+      await processoSeletivo.save();
+    }
+    
+    return processoSeletivo;
+  }
 
   static async findAll() {
-    const objs = await ProcessoSeletivo.findAll({ include: { all: true, nested: true } });
+    const objs = await ProcessoSeletivo.findAll({ 
+      include: [
+        { model: Empresa, as: 'empresa' },
+        { model: Etapa, as: 'etapas' },
+        { model: Vaga, as: 'vagas' }
+      ]
+    });
+    
+    // Verifica e atualiza o status de cada processo seletivo
+    for (let obj of objs) {
+      await this.verificarEAtualizarStatus(obj);
+    }
+    
     return objs;
   }
-
   static async findByPk(req) {
     const { id } = req.params;
-    const obj = await ProcessoSeletivo.findByPk(id, { include: { all: true, nested: true } });
+    const obj = await ProcessoSeletivo.findByPk(id, { 
+      include: [
+        { model: Empresa, as: 'empresa' },
+        { model: Etapa, as: 'etapas' },
+        { model: Vaga, as: 'vagas' }
+      ]
+    });
+    
+    if (obj) {
+      await this.verificarEAtualizarStatus(obj);
+    }
+    
     return obj;
   }
-
   static async create(req) {
     const { nome, data_inicio, data_final, descricao, empresaId } = req.body;
     
     const empresa = await Empresa.findByPk(empresaId);
     if (empresa == null) throw 'Empresa não encontrada!';
     
-    // O status será definido como 'NAO_INICIADO' pelo defaultValue do model
+    // Verifica se a data de início já passou para definir o status inicial
+    const agora = new Date();
+    const dataInicio = new Date(data_inicio);
+    const statusInicial = agora > dataInicio ? 'EM_ANDAMENTO' : 'NAO_INICIADO';
+    
     const obj = await ProcessoSeletivo.create({ 
       nome, 
       data_inicio, 
       data_final, 
       descricao, 
-      empresaId 
+      empresaId,
+      status: statusInicial
     });
-    // Retorna o objeto criado incluindo associações e o status default
-    return await ProcessoSeletivo.findByPk(obj.id, { include: { all: true, nested: true } });
+    
+    // Retorna o objeto criado incluindo associações
+    return await ProcessoSeletivo.findByPk(obj.id, { 
+      include: [
+        { model: Empresa, as: 'empresa' },
+        { model: Etapa, as: 'etapas' },
+        { model: Vaga, as: 'vagas' }
+      ]
+    });
   }
 
   static async update(req) {
@@ -97,13 +143,22 @@ class ProcessoSeletivoService {
       const empresa = await Empresa.findByPk(empresaId);
       if (empresa == null) throw 'Empresa não encontrada!';
     }
-    
-    // Atualiza o objeto com os dados recebidos (incluindo o status, se fornecido)
+      // Atualiza o objeto com os dados recebidos (incluindo o status, se fornecido)
     Object.assign(processoSeletivo, { nome, data_inicio, data_final, descricao, empresaId, status });
     
     const updatedObj = await processoSeletivo.save();
+    
+    // Verifica e atualiza o status baseado na data após a atualização
+    await this.verificarEAtualizarStatus(updatedObj);
+    
     // Retorna o objeto atualizado incluindo associações
-    return await ProcessoSeletivo.findByPk(updatedObj.id, { include: { all: true, nested: true } }); 
+    return await ProcessoSeletivo.findByPk(updatedObj.id, { 
+      include: [
+        { model: Empresa, as: 'empresa' },
+        { model: Etapa, as: 'etapas' },
+        { model: Vaga, as: 'vagas' }
+      ]
+    });
   }
 
   static async delete(req) {

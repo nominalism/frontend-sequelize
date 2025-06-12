@@ -22,28 +22,6 @@ const DEFAULT_ETAPA_INCLUDES = [
             ]
           }
         ]
-      },
-      {
-        association: 'vagas',
-        include: [
-          {
-            association: 'area'
-          },
-          {
-            association: 'candidaturas',
-            include: [
-              {
-                association: 'candidato',
-                include: [
-                  {
-                    association: 'interesses',
-                    include: [{ association: 'area' }]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
       }
     ]
   }
@@ -61,7 +39,6 @@ class EtapaService {
     const obj = await Etapa.findByPk(id, { include: DEFAULT_ETAPA_INCLUDES });
     return obj;
   }
-
   // Yuri
   // Method restored to exact logic from 'trabalho' project as per user instruction
   static async findByProcessoSeletivo(req) {
@@ -69,8 +46,7 @@ class EtapaService {
     const id = processoSeletivoId || req.params.id;
 
     let query = `SELECT e.* FROM "etapas" e
-                 JOIN "processosseletivos" p ON e.id = p.id
-                 WHERE p.id = :id`;
+                 WHERE e.processoseletivo_id = :id`;
 
     if (etapaId) {
         query += ` AND e.id = :etapaId`;
