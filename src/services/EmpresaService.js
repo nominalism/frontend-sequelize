@@ -13,12 +13,10 @@ import { Uf } from "../models/Uf.js";
 const DEFAULT_EMPRESA_INCLUDES = [
   {
     association: 'bairro',
-    as: 'empresaBairro', // Alias for direct Bairro association
     include: [
       {
         association: 'cidade',
-        as: 'empresaCidade', // Alias for Cidade under Bairro
-        include: [{ association: 'uf', as: 'empresaUf' }] // Alias for UF under Cidade
+        include: [{ association: 'uf' }]
       }
     ]
   },
@@ -27,38 +25,10 @@ const DEFAULT_EMPRESA_INCLUDES = [
     include: [
       {
         association: 'vagas',
-        include: [
-          {
-            association: 'area',
-            include: [
-              {
-                association: 'interesses',
-                include: [
-                  {
-                    association: 'candidato',
-                    include: [
-                      {
-                        association: 'bairro',
-                        as: 'candidatoBairroViaArea', // Distinct alias
-                        include: [
-                          {
-                            association: 'cidade',
-                            as: 'candidatoCidadeViaArea', // Distinct alias
-                            include: [{ association: 'uf', as: 'candidatoUfViaArea' }] // Distinct alias
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
+        include: [{ association: 'area' }]
       }
     ]
   }
-  // Adicione outros includes de primeiro nível para Empresa aqui, se houver
 ];
 
 class EmpresaService {
